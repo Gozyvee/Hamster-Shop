@@ -1,9 +1,10 @@
-<?php include "includes/header.php";?>
+<?php require "includes/header.php";?>
 <?php
 if (ifItIsMethod('post') && itisset('submit')){
     $firstname =  escape($_POST['firstname']);
     $lastname    =  escape($_POST['lastname']);
     $email    =  escape($_POST['emailaddress']);
+    $email = filter_var($email, FILTER_SANITIZE_EMAIL);
     $password =  escape($_POST['password']);
     $confirmpassword =  escape($_POST['repeatpassword']);
 
@@ -54,7 +55,7 @@ if (ifItIsMethod('post') && itisset('submit')){
 }
 ?>
 <!-- Navigation Bar -->
-<?php include "includes/navbar.php";?>
+<?php require "includes/navbar.php";?>
 <body class="bg-gradient-primary">
 
     <div class="container">

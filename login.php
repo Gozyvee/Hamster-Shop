@@ -1,5 +1,14 @@
-<?php include "includes/header.php" ?>
-<?php include "includes/navbar.php" ?>
+<?php require "includes/header.php" ?>
+<?php 
+if(ifItIsMethod('post')){
+	if(isset($_POST['email']) && isset($_POST['password'])){
+		login_user($_POST['email'], $_POST['password']);
+	}else{
+		redirect('/shop/index.php');
+	}
+}
+?>
+<?php require "includes/navbar.php" ?>
 
 <body class="bg-gradient-primary">
     <div class="container">
@@ -20,7 +29,7 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <form class="user">
+                                    <form class="user" method="post">
                                         <div class="text-center mb-3">
                                             <p>Sign in with:</p>
                                             <button type="button" class="btn btn-link btn-floating mx-1">
@@ -43,10 +52,10 @@
                                         <div>
                                         </div>
                                         <div class="form-group mb-3">
-                                            <input type="email" class="form-control form-control-user" aria-describedby="emailHelp" placeholder="Enter Email Address...">
+                                            <input name="email" type="email" class="form-control form-control-user" aria-describedby="emailHelp" placeholder="Enter Email Address...">
                                         </div>
                                         <div class="form-group mb-1">
-                                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password">
+                                            <input name="password" type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password">
                                         </div>
                                         <div class="form-group">
                                             <!-- 2 column grid layout -->
@@ -66,9 +75,7 @@
                                             </div>
                                         </div>
                                         <div class="d-grid mb-3">
-                                            <a href="index.html" class="btn btn-lg btn-primary btn-block">
-                                                Login
-                                            </a>
+                                        <input type="submit" name="submit" id="btn-login" class="btn btn-primary btn-lg btn-block d-grid" value="Login">
                                         </div>
                                     </form>
                                     <div class="text-center">

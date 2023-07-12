@@ -1,7 +1,7 @@
-<?php include "includes/header.php" ?>
+<?php require "includes/header.php" ?>
 <?php 
-     if(!ifItIsMethod('get') && !isset($_GET['forgot'])){
-        header('Location: ./login.php');
+     if(!ifItIsMethod('get') || !isset($_GET['forgot'])){
+        redirect('index.php');
     }
 ?>
 <?php include "includes/navbar.php" ?>

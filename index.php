@@ -1,5 +1,5 @@
-<?php include "includes/header.php";
-include "includes/navbar.php"; ?>
+<?php require "includes/header.php";
+require "includes/navbar.php"; ?>
     <!-- Start Banner Hero -->
     <div id="template-mo-zay-hero-carousel" class="carousel slide" data-bs-ride="carousel">
         <ol class="carousel-indicators">
