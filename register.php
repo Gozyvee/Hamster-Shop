@@ -49,7 +49,7 @@ if (ifItIsMethod('post') && itisset('submit')){
        mysqli_stmt_bind_param($stmt, "ssss", $firstname, $lastname, $email, $user_password);
        mysqli_stmt_execute($stmt);
        mysqli_stmt_close($stmt);
-       header('Location: ./login.php');
+       redirect('./login.php');
        exit();       
     }
 }

@@ -1,7 +1,20 @@
 <?php 
-require "/xampp/htdocs/shop/includes/db.php";
-require "/xampp/htdocs/shop/includes/functions.php"; 
+session_start();
+ob_start();
+require "db.php";
+require "functions.php"; 
+generateCSRFToken();
 ?>
+<?php 
+     if ($_SESSION['user_role'] == 'admin') {
+        // User is authorized, allow access to the page
+      } else {
+        // User is not authorized, redirect to login page
+        redirect("../index.php");
+        exit();
+      } 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 

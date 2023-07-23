@@ -17,12 +17,12 @@ function itisSet ($name){
 //===== END AUTHENTICATION HELPERS =====//
 
 //===== FORM HELPERS =====//
-// function matchwords ($allowed_characters, $user_input){
-//     if (preg_match($allowed_characters, $user_input)) {
-//         return true;
-//     } 
-//     return false;
-// }
+
+//echoing form data 
+function echo1 ($string=null){
+    if (isset($string)) {  echo $string; }
+    return;
+}
 
 //cleansing submitted fields
 function escape($string){
@@ -32,6 +32,8 @@ function escape($string){
 
 //=====END FORM HELPERS=====//
 //=====USER SPECIFIC HELPERS=====//
+
+//changing user to admin func
 function change_to_admin()
 {
     global $connection;
@@ -47,6 +49,7 @@ function change_to_admin()
 
     }
 }
+//changing user to subscriber func
 function change_to_sub()
 {
     global $connection;
@@ -62,6 +65,7 @@ function change_to_sub()
         mysqli_stmt_close($stmt);
     }
 }
+
 //=====END USER SPECIFIC HELPERS=====//
 
 //redirect function
@@ -72,14 +76,34 @@ function redirect($location=null){
 //checking if user input exists
 function ifitexists($user_firstname, $firstname){
     global $connection;
-    $query = "SELECT $user_firstname FROM users WHERE $user_firstname = '$firstname'";
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT $user_firstname FROM users WHERE $user_firstname = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, 's', $firstname);
+    $result = mysqli_stmt_get_result($stmt);
+
     if(mysqli_num_rows($result) > 0) {
         return true;
     }else{
         return false;
     }
 }
+
+function isLoggedin($user_role=null){
+    if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == $user_role){
+        return true;
+    }
+    return false;
+}
+
+// Generate CSRF token and store it in the user's session for form submission
+function generateCSRFToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate a random token
+    }
+}
+
+
+//login function
 function login_user($email=null, $password=null){
     global $connection;
 
@@ -95,7 +119,6 @@ function login_user($email=null, $password=null){
       $row = $result->fetch_assoc();
       $db_user_id = $row['id'];
       $db_user_firstname = $row['user_firstname'];
-      $db_user_lastname = $row['user_lastname'];
       $db_user_password = $row['user_password'];
       $db_user_role = $row['user_role'];
 
@@ -107,13 +130,9 @@ function login_user($email=null, $password=null){
         $stmt->bind_param("iss", $db_user_id, $session_token, $expiry_time);
         $stmt->execute();
 
+        
         $_SESSION['firstname'] = $db_user_firstname;
-        $_SESSION['lastname'] = $db_user_lastname;
         $_SESSION['user_role'] = $db_user_role;
-        $_SESSION['user_id'] = $db_user_id; 
-        $_SESSION['session_token'] = $session_token;
-        $_SESSION['expiry_time'] = $expiry_time;
-
         
         redirect("/shop/admin");
       

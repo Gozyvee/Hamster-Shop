@@ -30,21 +30,41 @@
             echo "<tr>";
             echo "<td>{$user_id}</td>";
             echo "<td>{$user_email}</td>";
-            echo "<td>{$user_firstname}</td>";                
+            echo "<td>{$user_firstname}</td>";
             echo "<td>{$user_lastname}</td>";
             echo "<td>{$user_role}</td>";
 
             echo "<td> <a class='btn btn-success' href='users.php?change_to_admin={$user_id}'>Admin</a></td>";
             echo "<td> <a class='btn btn-info' href='users.php?change_to_sub={$user_id}'>Sub</a></td>";
             echo "<td> <a class='btn btn-warning' href='users.php?input=edit_user&edit_user={$user_id}'>Edit</a></td>";
-            echo "<td> <a class='btn btn-danger' href='users.php?delete={$user_id}'>Delete</a></td>";
+        ?>
+            <form method="post">
+                <input type="hidden" name="user_id" value="<?php echo $user_id ?>">
+                <?php
+                echo '<td><input class="btn btn-danger" type="submit" name="delete" value="Delete"></td>';
+                ?>
+            </form>
+        <?php
+
             echo "</tr>";
         }
         ?>
-      
+
     </tbody>
 </table>
-<?php 
-    change_to_admin();
-    change_to_sub();
+<?php
+change_to_admin();
+change_to_sub();
+
+//deleting user from database with post method
+if (ifItIsMethod('post')) {
+    $the_user_id = $_POST['user_id'];
+
+    $query = "DELETE FROM users WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $the_user_id);
+    mysqli_stmt_execute($stmt);
+    redirect('users.php');
+    mysqli_stmt_close($stmt);
+}
 ?>

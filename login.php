@@ -1,8 +1,14 @@
 <?php require "includes/header.php" ?>
 <?php 
 if(ifItIsMethod('post')){
-	if(isset($_POST['email']) && isset($_POST['password'])){
-		login_user($_POST['email'], $_POST['password']);
+    $email = escape($_POST['email']);
+    $password = escape($_POST['password']);
+
+	if(isset($email) && isset($password)){
+        login_user($email, $password);
+        if(isLoggedin('admin')){
+            redirect('/shop/admin/');
+        }
 	}else{
 		redirect('/shop/index.php');
 	}

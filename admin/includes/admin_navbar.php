@@ -10,10 +10,19 @@
              <div class="flex-fill">
                  <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                      <li class="nav-item">
+                         <a class="nav-link" href="/shop/admin/"><span class="text-gray-600 ">Dashboard</span> </a>
+                     </li>
+                     <li class="nav-item">
                          <a class="nav-link" href="/shop/index.php"><span class="text-gray-600 ">Home</span> </a>
                      </li>
                      <li class="nav-item">
                          <a href="users.php" class="nav-link"><span class="text-gray-600 ">Users</span></a>
+                     </li>
+                     <li class="nav-item">
+                         <a href="categories.php" class="nav-link"><span class="text-gray-600 ">Category</span></a>
+                     </li>
+                     <li class="nav-item">
+                         <a href="products.php" class="nav-link"><span class="text-gray-600 ">Products</span></a>
                      </li>
              </div>
      </nav>
@@ -125,6 +134,5 @@
          </li>
 
      </ul>
-
  </nav>
  <!-- End of Topbar -->
