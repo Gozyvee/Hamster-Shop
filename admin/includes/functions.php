@@ -20,14 +20,14 @@ function itisSet ($name){
 
 //echoing form data 
 function echo1 ($string=null){
-    if (isset($string)) {  echo $string; }
+    if (isset($string)) {  echo htmlspecialchars($string); }
     return;
 }
 
 //cleansing submitted fields
 function escape($string){
     global $connection;
-   return mysqli_real_escape_string($connection, trim(strip_tags(htmlspecialchars($string))));
+   return trim(strip_tags(htmlspecialchars($string)));
 }
 
 //=====END FORM HELPERS=====//
@@ -74,20 +74,21 @@ function redirect($location=null){
 }
 
 //checking if user input exists
-function ifitexists($user_firstname, $firstname){
-    global $connection;
-    $query = "SELECT $user_firstname FROM users WHERE $user_firstname = ?";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, 's', $firstname);
-    $result = mysqli_stmt_get_result($stmt);
+// function ifitexists($column, $postInput){
+//     global $connection;
+//     $query = "SELECT * FROM users WHERE $column = ?";
+//     $stmt = mysqli_prepare($connection, $query);
+//     mysqli_stmt_bind_param($stmt, 's', $postInput);
+//     $result = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_num_rows($result) > 0) {
-        return true;
-    }else{
-        return false;
-    }
-}
+//     if(mysqli_num_rows($result) > 0) {
+//         return true;
+//     }else{
+//         return false;
+//     }
+// }
 
+//Checking user login status and role
 function isLoggedin($user_role=null){
     if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == $user_role){
         return true;
@@ -100,6 +101,38 @@ function generateCSRFToken() {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate a random token
     }
+}
+
+//Checking if tokens match and letting user send request
+function checkCsrf(){
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("Invalid user");
+    }
+    return;
+}
+
+function sanitizeFileName($filename) {
+    // Remove any non-alphanumeric characters and replace spaces with underscores
+    $filename = preg_replace("/[^a-zA-Z0-9_.]/", "", str_replace(" ", "_", $filename));
+    return $filename;
+}
+
+//deleting user from database with post method
+function postDelete($table=null, $redirect=null){
+    global $connection;
+    if (ifItIsMethod('post')) {
+        if (isset($_POST['user_id']) && isset($_POST['delete'])) {
+            $the_user_id = $_POST['user_id'];
+    
+            $query = "DELETE FROM $table WHERE id = ?";
+            $stmt = mysqli_prepare($connection, $query);
+            mysqli_stmt_bind_param($stmt, 'i', $the_user_id);
+            mysqli_stmt_execute($stmt);
+            redirect($redirect);
+            mysqli_stmt_close($stmt);
+        }
+    }
+    return;
 }
 
 
@@ -130,7 +163,7 @@ function login_user($email=null, $password=null){
         $stmt->bind_param("iss", $db_user_id, $session_token, $expiry_time);
         $stmt->execute();
 
-        
+        session_regenerate_id(true);
         $_SESSION['firstname'] = $db_user_firstname;
         $_SESSION['user_role'] = $db_user_role;
         
@@ -142,3 +175,4 @@ function login_user($email=null, $password=null){
    }
    return true; 
 }
+

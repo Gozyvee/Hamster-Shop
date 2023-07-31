@@ -1,25 +1,18 @@
 <?php
 if (ifItIsMethod('post')) {
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        // CSRF token validation failed, handle the error appropriately (e.g., show an error message, log the attempt, etc.).
-        die("CSRF validation failed. Please try again.");
-    }
-
+    checkCsrf();
      
     $product_name = escape($_POST['name']);
     $product_category = escape($_POST['product_category']);
     $product_user = escape($_POST['product_user']);
     $product_gender = escape($_POST['gender']);
 
-    $product_image = escape($_FILES['image']['name']);
+    $product_image = $_FILES['image']['name'];
     
     // Validate the product image value
     if (!empty($product_image) && preg_match('/^[a-zA-Z0-9_]+\.(jpg|jpeg|png|gif)$/', $product_image)) {
         // The product image value is valid. Proceed with sanitization.
         $product_image = htmlspecialchars($product_image, ENT_QUOTES, 'UTF-8');
-    } else {
-        // Handle the case when the product image value is not valid 
-        $product_image = 'DP.jpg'; 
     }
 
     $product_image_temp = $_FILES['image']['tmp_name'];

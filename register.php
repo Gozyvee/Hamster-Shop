@@ -1,6 +1,7 @@
 <?php require "includes/header.php";?>
 <?php
 if (ifItIsMethod('post') && itisset('submit')){
+    
     $firstname =  escape($_POST['firstname']);
     $lastname    =  escape($_POST['lastname']);
     $email    =  escape($_POST['emailaddress']);
@@ -16,23 +17,22 @@ if (ifItIsMethod('post') && itisset('submit')){
 
     if (strlen($firstname) < 4 ) {
         $error['firstname'] = 'Cannot be less than 4 characters';
-    }
-    if ($firstname == '') {
+    }elseif ($firstname == '') {
         $error['firstname'] = 'Field cannot be empty';
     }
     if ( $email == '') {
         $error['email'] = 'Email cannot be empty';
-    }
-    if (ifitexists('user_email', $email)) {
-        $error['email'] = 'Email already exists';
     }
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
         $error['email'] = 'Please enter a correct email format';
     }
     if ($password == '') {
         $error['password'] = 'Password cannot be empty';
-    }
-    if ($password !== $confirmpassword) {
+    } elseif (strlen($password) < 4) {
+        $error['password'] = "Password must be at least 4 characters long";
+    } elseif (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
+        $error['password'] = "Password must contain at least one uppercase letter, one lowercase letter, and one digit";
+    }elseif ($password !== $confirmpassword) {
         $error['password'] = 'Passwords do not match!';
     }
     //condition to register and login new user
@@ -42,6 +42,7 @@ if (ifItIsMethod('post') && itisset('submit')){
         }
     }
     if (empty($error)) {
+        checkCsrf();
        $user_password = password_hash( $password, PASSWORD_BCRYPT, array('cost' => 12));
        $query = "INSERT INTO users (user_firstname, user_lastname, user_email, user_password, user_role)";
        $query .= "VALUES(?, ?, ?, ?, 'subscriber')";
@@ -115,7 +116,8 @@ if (ifItIsMethod('post') && itisset('submit')){
                                         <p><?php echo isset($error['repeatpassword']) ? $error['repeatpassword'] : ''  ?></p>
                                     </div>
                                 </div>
-                                <input href="login.php" type="submit" name="submit" id="btn-login" class="btn btn-primary btn-lg btn-block d-grid" value="Register">
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+                                <input type="submit" name="submit" id="btn-login" class="btn btn-primary btn-lg btn-block d-grid" value="Register">
                                 <hr>
                             </form>
                             <hr>

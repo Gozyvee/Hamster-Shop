@@ -57,14 +57,5 @@ change_to_admin();
 change_to_sub();
 
 //deleting user from database with post method
-if (ifItIsMethod('post')) {
-    $the_user_id = $_POST['user_id'];
-
-    $query = "DELETE FROM users WHERE id = ?";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, 'i', $the_user_id);
-    mysqli_stmt_execute($stmt);
-    redirect('users.php');
-    mysqli_stmt_close($stmt);
-}
+postDelete('users','users.php');
 ?>

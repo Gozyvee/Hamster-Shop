@@ -20,7 +20,7 @@ require "includes/admin_navbar.php";
                     break;
 
                     case 'edit_product';
-                    include "includes/edit_post.php";
+                    include "includes/edit_products.php";
                     break;
 
                     default: 

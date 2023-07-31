@@ -1,59 +1,33 @@
 <?php
-if (itisset($_GET['edit_user'])) {
-    $the_user_id = $_GET['edit_user'];
+require_once('config.php');
 
-    $query = "SELECT * FROM users WHERE id = ?";
+// Check if the token parameter is present in the URL
+if (isset($_GET['token'])) 
+{
+     $encodedToken = $_GET['token'];
+
+    $id = encryptor('decrypt', $encodedToken);
+
+    $query = "SELECT * FROM products WHERE id = ?";
     $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "i", $the_user_id);
+    mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
     while ($row = mysqli_fetch_assoc($result)) {
-        $user_id = $row['id'];
-        $user_password = $row['user_password'];
-        $user_firstname = $row['user_firstname'];
-        $user_lastname = $row['user_lastname'];
-        $user_email = $row['user_email'];
-        $user_role = $row['user_role'];
+        $product_id = $row['id'];
+       
+        echo 'hello' . $product_id;
     }
+
+} 
+else 
+{
+    // Handle invalid or tampered token
+    echo "Invalid or tampered token. Please try again.";
 }
-
-
-if (ifItIsMethod('post')) {
-
-    checkCsrf();
-
-    $user_firstname = escape($_POST['user_firstname']);
-    $user_lastname = escape($_POST['user_lastname']);
-    $email = escape($_POST['user_email']);
-    $user_email = filter_var($email, FILTER_SANITIZE_EMAIL);
-    $password = escape($_POST['user_password']);
-    $user_password = password_hash($password, PASSWORD_BCRYPT, array('cost' => 12));
-    $user_role = escape($_POST['user_role']);
-
-
-    $query = "UPDATE users SET ";
-    $query .= "user_firstname = ?, ";
-    $query .= "user_lastname = ?, ";
-    $query .= "user_role = ?, ";
-    $query .= "user_email = ?, ";
-    $query .= "user_password = ? ";
-    $query .= "WHERE id = ? ";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, 'sssssi', $user_firstname, $user_lastname, $user_role, $user_email, $user_password, $the_user_id);
-    mysqli_stmt_execute($stmt);
-
-    session_regenerate_id();
-
-    // Redirect to a secure page after successful login
-    redirect("users.php");
-
-    exit();
-}
-
-
-
 ?>
+
 <form action="" method="post">
     <div class="form-group">
         <label for="title">Firstname</label>

@@ -1,6 +1,7 @@
 <?php require "includes/header.php" ?>
 <?php 
 if(ifItIsMethod('post')){
+    checkCsrf();
     $email = escape($_POST['email']);
     $password = escape($_POST['password']);
 
@@ -81,6 +82,7 @@ if(ifItIsMethod('post')){
                                             </div>
                                         </div>
                                         <div class="d-grid mb-3">
+                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                                         <input type="submit" name="submit" id="btn-login" class="btn btn-primary btn-lg btn-block d-grid" value="Login">
                                         </div>
                                     </form>

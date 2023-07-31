@@ -1,10 +1,8 @@
 <?php 
 require "includes/header.php";
+require "includes/navbar.php";
 ?>
 <body>
-    <?php 
-    require "includes/navbar.php";
-   ?>
     <!-- Modal -->
     <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">

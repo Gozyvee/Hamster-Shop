@@ -1,4 +1,12 @@
 <?php 
+session_set_cookie_params([
+  'lifetime' => 0, // Set to 0 for session lifetime (until browser is closed)
+  'path' => '/',
+  'domain' => 'localhost/shop/', // Replace with your domain
+  'secure' => true, // Set to true for HTTPS only
+  'httponly' => true, // Set to true to prevent client-side scripts from accessing the cookie
+  'samesite' => 'Strict', // Use 'Strict', 'Lax', or 'None' depending on your needs
+]);
 session_start();
 ob_start();
 require "db.php";
