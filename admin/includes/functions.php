@@ -2,7 +2,7 @@
 //===== AUTHENTICATION HELPERS =====//
 function ifItIsMethod($method=null)
 {
-    if ($_SERVER['REQUEST_METHOD'] == strtoupper($method)) {
+    if ($_SERVER['REQUEST_METHOD'] === strtoupper($method)) {
         return true;
     }
     return false;
@@ -20,14 +20,14 @@ function itisSet ($name){
 
 //echoing form data 
 function echo1 ($string=null){
-    if (isset($string)) {  echo htmlspecialchars($string); }
+    echo isset($string) ? htmlspecialchars($string, ENT_QUOTES, 'UTF-8') : '';
     return;
 }
 
 //cleansing submitted fields
 function escape($string){
     global $connection;
-   return trim(strip_tags(htmlspecialchars($string)));
+   return trim(strip_tags(htmlspecialchars($string, ENT_QUOTES, 'UTF-8')));
 }
 
 //=====END FORM HELPERS=====//
@@ -37,9 +37,10 @@ function escape($string){
 function change_to_admin()
 {
     global $connection;
-    if (isset($_GET['change_to_admin'])) {
-        $the_user_id = $_GET['change_to_admin'];
-
+       if (isset($_GET['change_to_admin'])) {
+        $encodedToken = $_GET['change_to_admin'];
+        $the_user_id = encryptor('decrypt', $encodedToken);
+    
         $query = "UPDATE users SET user_role = 'admin' WHERE id = ?";
         $stmt = mysqli_prepare($connection, $query);
         mysqli_stmt_bind_param($stmt, 'i', $the_user_id);
@@ -55,7 +56,8 @@ function change_to_sub()
     global $connection;
 
     if (isset($_GET['change_to_sub'])) {
-        $the_user_id = $_GET['change_to_sub'];
+        $encodedToken = $_GET['change_to_sub'];
+        $the_user_id = encryptor('decrypt', $encodedToken);
 
         $query = "UPDATE users SET user_role = 'subscriber' WHERE id = ?";
         $stmt = mysqli_prepare($connection, $query);
@@ -65,6 +67,8 @@ function change_to_sub()
         mysqli_stmt_close($stmt);
     }
 }
+
+
 
 //=====END USER SPECIFIC HELPERS=====//
 
@@ -88,6 +92,24 @@ function redirect($location=null){
 //     }
 // }
 
+function countCart (){
+    // global $connection;
+    if($_GET['cartCount']){
+       
+        echo count($_SESSION['cart']);
+    }
+    
+}
+
+function imgSanitizer($product_image){
+      // Validate the product image value
+      if (!empty($product_image) && preg_match('/^[a-zA-Z0-9_]+\.(jpg|jpeg|png|gif)$/', $product_image)) {
+        // The product image value is valid. Proceed with sanitization.
+        $product_image = htmlspecialchars($product_image, ENT_QUOTES, 'UTF-8');
+    }
+    return $product_image;
+}
+
 //Checking user login status and role
 function isLoggedin($user_role=null){
     if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == $user_role){
@@ -105,10 +127,9 @@ function generateCSRFToken() {
 
 //Checking if tokens match and letting user send request
 function checkCsrf(){
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("Invalid user");
+    if (hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    return true;
     }
-    return;
 }
 
 function sanitizeFileName($filename) {

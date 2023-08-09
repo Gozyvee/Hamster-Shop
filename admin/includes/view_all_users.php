@@ -34,9 +34,18 @@
             echo "<td>{$user_lastname}</td>";
             echo "<td>{$user_role}</td>";
 
-            echo "<td> <a class='btn btn-success' href='users.php?change_to_admin={$user_id}'>Admin</a></td>";
-            echo "<td> <a class='btn btn-info' href='users.php?change_to_sub={$user_id}'>Sub</a></td>";
-            echo "<td> <a class='btn btn-warning' href='users.php?input=edit_user&edit_user={$user_id}'>Edit</a></td>";
+              // Encrypt the sensitive data to create the token
+              $encryptedToken = encryptor('encrypt', $user_id);
+              // URL encode the encrypted token before including it in the URL
+              $encodedToken = urlencode($encryptedToken);
+              // Generate the link with the encrypted token as a query parameter
+              $edit_link = "users.php?change_to_admin=". $encodedToken;
+              $editSecondLink = "users.php?change_to_sub=". $encodedToken;
+              $updateUser = "users.php?input=edit_user&edit_user=". $encodedToken;
+
+            echo "<td> <a class='btn btn-success' href='$edit_link'>Admin</a></td>";
+            echo "<td> <a class='btn btn-info' href='{$editSecondLink}'>Sub</a></td>";
+            echo "<td> <a class='btn btn-warning' href='{$updateUser}'>Edit</a></td>";
         ?>
             <form method="post">
                 <input type="hidden" name="user_id" value="<?php echo $user_id ?>">

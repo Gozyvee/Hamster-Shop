@@ -201,3 +201,4 @@ require "includes/navbar.php"; ?>
     </section>
     <!-- End Featured Product -->
 <?php include "includes/footer.php"; ?> 
+

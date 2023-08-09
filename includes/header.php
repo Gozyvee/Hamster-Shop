@@ -1,6 +1,8 @@
 <?php session_start();
+ob_start();
 require "/xampp/htdocs/shop/admin/includes/db.php";
 require "/xampp/htdocs/shop/admin/includes/functions.php"; 
+generateCSRFToken();
 ?>
 <!DOCTYPE html>
 <html lang="en">

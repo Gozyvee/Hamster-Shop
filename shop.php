@@ -3,7 +3,25 @@ require "includes/navbar.php";
 ?>
 
 <body>
-    <?php  ?>
+    <?php
+        function cart(){
+            if (isset($_POST['add'])) {
+                $product_id = $_POST['product_id'];
+            
+                if (!isset($_SESSION['cart'])) {
+                    $_SESSION['cart'] = array();
+                }
+            
+                if (isset($_SESSION['cart'][$product_id])) {
+                    echo "already in cart";
+                } else {
+                    $_SESSION['cart'][$product_id] = 1;
+                }
+            }
+            return $_SESSION['cart'];
+        }
+        cart();
+    ?>
     <!-- Modal -->
     <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -89,34 +107,52 @@ require "includes/navbar.php";
                         </div>
                     </div>
                 </div>
-                
-               <div class="row">
-                <div class="col-md-12">
-                    <div class="row">
-                        <?php 
-                                   $query = "SELECT * FROM products ORDER BY id DESC";
-                                   $stmt = mysqli_prepare($connection, $query);
-                                   mysqli_stmt_execute($stmt);
-                                   mysqli_stmt_bind_result($stmt, $product_id, $product_user, $product_name, $product_image, $product_gender, $product_size, $product_price, $product_category);
-                           
-                                   while (mysqli_stmt_fetch($stmt)) {
-                        ?>
-                        <div class="col-md-4">
-                            <div class="card">
-                                <img src="./img/<?=$product_image?>" alt="">
-                                <div class="card-body">
-                                <a href="shop-single.php" class="h3 text-decoration-none card-title"><?=$product_name?></a>
-                                    <p class="card-text">jibberish</p>
-                                    <a href="#" class="btn btn-info">Add to cart</a>
-                                    <a href="#" class="btn btn-info">View More</a>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <?php
+                            $query = "SELECT * FROM products ORDER BY id DESC";
+                            $stmt = mysqli_prepare($connection, $query);
+                            mysqli_stmt_execute($stmt);
+                            mysqli_stmt_bind_result($stmt, $product_id, $product_user, $product_name, $product_image, $product_gender, $product_size, $product_price, $product_category);
+
+                            while (mysqli_stmt_fetch($stmt)) {
+                            ?>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <img src="./img/<?= $product_image ?>" alt="">
+                                        <div class="card-body">
+                                            
+                                            <a href="shop-single.php?display_single=" .<?=$product_gender?> class="h3 text-decoration-none card-title"><?= $product_name ?></a>
+                                            <p class="card-text">jibberish</p>
+                                            <ul class="list-unstyled d-flex justify-content-between">
+                                                <li>
+                                                    <i class="text-warning fa fa-star"></i>
+                                                    <i class="text-warning fa fa-star"></i>
+                                                    <i class="text-warning fa fa-star"></i>
+                                                    <i class="text-muted fa fa-star"></i>
+                                                    <i class="text-muted fa fa-star"></i>
+                                                </li>
+                                                <li class="text-right">
+                                                    <p>$ <?= $product_price ?></p>
+                                                </li>
+                                            </ul>
+                                            <form method="post">
+                                                <input type="hidden" name="product_id" value="<?= $product_id ?>">
+                                                <input type="submit" name="add" class="btn btn-success" value="Add to cart">
+
+                                            </form>
+                                     
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+
+                            <?php }
+                            ?>
                         </div>
-                                   <?php }
-                    ?>
                     </div>
                 </div>
-               </div>
                 <div div="row">
                     <ul class="pagination pagination-lg justify-content-end">
                         <li class="page-item disabled">
@@ -238,5 +274,4 @@ require "includes/navbar.php";
             </div>
         </div>
     </section>
-    <!--End Brands-->
-    <?php require "includes/footer.php"; ?>
+  

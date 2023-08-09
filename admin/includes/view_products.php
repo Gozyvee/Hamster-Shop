@@ -1,6 +1,4 @@
 <?php
-require_once('config.php');
-
 if (isset($_POST['checkBoxArray'])) {
     $checkbox = $_POST['checkBoxArray'];
 
@@ -43,7 +41,7 @@ if (isset($_POST['checkBoxArray'])) {
     }
 }
 ?>
-<form action="" method="post">
+<form method="post">
     <table class="table table-bordered border-dark table-hover">
         <div id="bulkOptionsContainer" class="col-md-6 mb-2">
             <select class="form-control" name="bulk_options" id="">
@@ -84,12 +82,6 @@ if (isset($_POST['checkBoxArray'])) {
                 echo "<td>" . escape($product_id) . "</td>";
                 echo "<td>" . escape($product_user) . "</td>";
                 echo "<td>" . escape($product_name) . "</td>";
-                // Validate the product image value
-                if (!empty($product_image) && preg_match('/^[a-zA-Z0-9_]+\.(jpg|jpeg|png|gif)$/', $product_image)) {
-                    $product_image = htmlspecialchars($product_image, ENT_QUOTES, 'UTF-8');
-                } else {
-                    $product_image = null;
-                }
                 echo "<td><img src='../img/{$product_image}' width='100' alt='image'></td>";
                 echo "<td>" . escape($product_gender) . "</td>";
                 echo "<td>" . escape($product_size) . "</td>";

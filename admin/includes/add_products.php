@@ -1,34 +1,53 @@
 <?php
 if (ifItIsMethod('post')) {
-    checkCsrf();
-     
-    $product_name = escape($_POST['name']);
-    $product_category = escape($_POST['product_category']);
-    $product_user = escape($_POST['product_user']);
-    $product_gender = escape($_POST['gender']);
+    if (checkCsrf()) {
+        $product_name = escape($_POST['name']);
+        $product_category = escape($_POST['product_category']);
+        $product_user = escape($_POST['product_user']);
+        $product_gender = escape($_POST['gender']);
 
-    $product_image = $_FILES['image']['name'];
-    
-    // Validate the product image value
-    if (!empty($product_image) && preg_match('/^[a-zA-Z0-9_]+\.(jpg|jpeg|png|gif)$/', $product_image)) {
-        // The product image value is valid. Proceed with sanitization.
-        $product_image = htmlspecialchars($product_image, ENT_QUOTES, 'UTF-8');
+        $product_image = $_FILES['image'];
+        $product_image_temp = $product_image['tmp_name'];
+
+        $product_size = escape($_POST['size']);
+        $product_price = escape($_POST['price']);
+
+        // Validate file type (e.g., allow only specific image types)
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $fileInfo = pathinfo($product_image['name']);
+        $extension = strtolower($fileInfo['extension']);
+        if (!in_array($extension, $allowedExtensions)) {
+            return false;
+        }
+
+        if (empty($product_name) || empty($product_price) || empty($product_gender) || empty($product_image) || empty($product_size)) {
+            $errors[] = 'Please fill all required fields.';
+            echo $errors;
+        }
+
+        if ($product_image['size'] < 5097152) {
+            // Generate a unique file name for the image
+            $uniqueImageName = uniqid() . '.' . $extension;
+            // Move the uploaded file to the desired directory
+            $destination = "../img/" . $uniqueImageName;   
+            // Move uploaded file to the desired location
+            if(move_uploaded_file($product_image_temp, $destination)){
+                $query = "INSERT into products(user, product_name, product_img, product_gender, product_size, product_price, product_category) VALUES(?, ?, ?, ?, ?, ?, ?)";
+                $stmt = mysqli_prepare($connection, $query);
+                mysqli_stmt_bind_param($stmt, 'sssssss', $product_user, $product_name, $uniqueImageName, $product_gender, $product_size, $product_price, $product_category);
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_close($stmt);
+                    redirect('./products.php');
+                    exit();
+                } else {
+                    die('Error while executing the database query.');
+                }
+            }        
+        }else{
+            echo "file is larger than 5mb";
+        }
+       
     }
-
-    $product_image_temp = $_FILES['image']['tmp_name'];
-
-    $product_size = escape($_POST['size']);
-    $product_price = escape($_POST['price']);
-
-    $query = "INSERT into products(user, product_name, product_img, product_gender, product_size, product_price, product_category) VALUES(?, ?, ?, ?, ?, ?, ?)";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, 'sssssss', $product_user, $product_name, $product_image, $product_gender, $product_size, $product_price, $product_category);
-    mysqli_stmt_execute($stmt);
-
-    move_uploaded_file($product_image_temp, "../img/$product_image");
-
-    mysqli_stmt_close($stmt);
-    redirect('./products.php');
 }
 ?>
 <div class="container-fluid">
@@ -37,7 +56,7 @@ if (ifItIsMethod('post')) {
             <form method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">Product name</label>
-                    <input type="text" class="form-control" name="name">
+                    <input type="text" class="form-control" name="name" required minlength="10" maxlength="50">
                 </div>
 
                 <div class="form-group">
@@ -102,15 +121,15 @@ if (ifItIsMethod('post')) {
 
                 <div class="form-group">
                     <label for="title">Post Image</label>
-                    <input type="file" class="form-control" name="image">
+                    <input type="file" class="form-control" name="image" required accept="image/jpeg, image/png, image/gif, image/jpg">
                 </div>
                 <div class="form-group">
                     <label for="title">Product size</label>
-                    <input type="text" class="form-control" name="size">
+                    <input type="text" class="form-control" name="size" required minlength="3" maxlength="10">
                 </div>
                 <div class="form-group">
                     <label for="title">Product price</label>
-                    <input type="text" class="form-control" name="price">
+                    <input type="text" class="form-control" name="price" required minlength="3" maxlength="15">
                 </div>
                 <div class="form-group">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
@@ -119,6 +138,6 @@ if (ifItIsMethod('post')) {
 
             </form>
         </div>
-        
+
     </div>
 </div>

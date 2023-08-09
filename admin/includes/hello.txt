@@ -1,0 +1,82 @@
+good session mgmt.
+encrypting get url to hide sensitive data
+writing algorithm efficient code.
+generating csrf_token and authenticating before submitting form.
+
+<script>
+$(document).ready(function() {
+  // Function to update the cart count
+  function updateCartCount() {
+    $.ajax({
+      url: 'update_cart.php', // Replace this with the server-side script that updates the cart
+      method: 'POST', // Use 'POST' or 'GET' depending on your server-side implementation
+      dataType: 'json', // Response data type
+      success: function(response) {
+        // Update the cart count display
+        $('#cart-count').text(response.count);
+      },
+      error: function() {
+        console.log('Failed to update cart count.');
+      }
+    });
+  }
+
+  // Event listener for the "Add to Cart" button click
+  $('#add-to-cart-btn').on('click', function() {
+    // Add your logic to add the item to the cart here
+    // For example, you can use another AJAX request to update the cart on the server-side
+
+    // After adding the item to the cart, update the cart count display
+    updateCartCount();
+  });
+
+  // Update the cart count when the page loads
+  updateCartCount();
+});
+</script>
+
+<?php
+session_start();
+
+if (isset($_POST['add'])) {
+    $product_id = $_POST['product_id'];
+
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = array();
+    }
+
+    if (isset($_SESSION['cart'][$product_id])) {
+        echo "Product already in cart";
+    } else {
+        $_SESSION['cart'][$product_id] = 1;
+    }
+
+    // Return the updated cart count as a response to the AJAX request
+    echo count($_SESSION['cart']);
+    exit(); // Stop further PHP execution to prevent unwanted output
+}
+?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Add to Cart form -->
+    <form id="add-to-cart-form" method="post">
+        <input type="hidden" name="product_id" value="1">
+        <input type="submit" name="add" value="Add to Cart">
+    </form>
+
+    <!-- Cart count display -->
+    <span id="cart-count" class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
+
+    <!-- JavaScript to handle AJAX -->
+    
+</body>
+
+</html>
+

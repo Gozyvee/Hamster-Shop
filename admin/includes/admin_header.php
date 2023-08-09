@@ -1,20 +1,20 @@
 <?php 
-session_set_cookie_params([
-  'lifetime' => 0, // Set to 0 for session lifetime (until browser is closed)
-  'path' => '/',
-  'domain' => 'localhost/shop/', // Replace with your domain
-  'secure' => true, // Set to true for HTTPS only
-  'httponly' => true, // Set to true to prevent client-side scripts from accessing the cookie
-  'samesite' => 'Strict', // Use 'Strict', 'Lax', or 'None' depending on your needs
-]);
+// Set session timeout to 30 minutes (1800 seconds)
+$sessionTimeout = 1800;
+// Enable the secure flag to ensure sessions are transmitted only over HTTPS
+$secureFlag = true;
+// Set the session cookie parameters
+session_set_cookie_params($sessionTimeout, '/', $secureFlag, true, 'Strict');
+
 session_start();
 ob_start();
 require "db.php";
 require "functions.php"; 
+require_once('config.php');
 generateCSRFToken();
 ?>
 <?php 
-     if ($_SESSION['user_role'] == 'admin') {
+     if ($_SESSION['user_role'] === 'admin') {
         // User is authorized, allow access to the page
       } else {
         // User is not authorized, redirect to login page

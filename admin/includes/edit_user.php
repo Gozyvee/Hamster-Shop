@@ -1,6 +1,8 @@
 <?php
-if (itisset($_GET['edit_user'])) {
-    $the_user_id = $_GET['edit_user'];
+// Check if the user ID to edit is provided via GET request
+if (isset($_GET['edit_user'])) {
+    $encodedToken = $_GET['edit_user'];
+    $the_user_id = encryptor('decrypt', $encodedToken);
 
     $query = "SELECT * FROM users WHERE id = ?";
     $stmt = mysqli_prepare($connection, $query);
@@ -8,53 +10,80 @@ if (itisset($_GET['edit_user'])) {
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
-    while ($row = mysqli_fetch_assoc($result)) {
+    // Check if a user with the given ID exists before retrieving data
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
         $user_id = $row['id'];
-        $user_password = $row['user_password'];
         $user_firstname = $row['user_firstname'];
         $user_lastname = $row['user_lastname'];
         $user_email = $row['user_email'];
         $user_role = $row['user_role'];
+    } else {
+        die('go away');
     }
 }
 
+// Check if the form has been submitted via POST and check if csrf token match
+if (ifItIsMethod('post') && checkCsrf()) {
+   
+    // Retrieve and sanitize form data
+    $user_firstname = $_POST['user_firstname'];
+    $user_lastname = $_POST['user_lastname'];
+    $user_email = $_POST['user_email'];
+    $user_role = $_POST['user_role'];
+    $user_password = $_POST['user_password'];
+    // Check if any fields have changed before executing the UPDATE query
+    if 
+    (
+        isset($user_firstname) ||
+        isset($user_lastname) ||
+        isset($user_email) ||
+        isset($user_role) ||
+        isset($user_password)
+    ) {
+        $query = "UPDATE users SET ";
+        $fields = array();
 
-if (ifItIsMethod('post')) {
+        // Update user_firstname
+        if (isset($user_firstname)) {
+            $fields[] = "user_firstname = '" . escape($user_firstname) . "'";
+        }
+        // Update user_lastname
+        if (isset($user_lastname)) {
+            $fields[] = "user_lastname = '" . escape($user_lastname) . "'";
+        }
+        // Update user_role
+        if (isset($_POST['user_role'])) {
+            $fields[] = "user_role = '" . escape($user_role) . "'";
+        }
+        // Update user_email
+        if (isset($_POST['user_email'])) {
+            $fields[] = "user_email = '" . filter_var(escape($user_email), FILTER_SANITIZE_EMAIL) . "'";
+        }
+        if (isset($_POST['user_password'])) {
+            $fields[] = "user_password = '" . password_hash(escape($user_password), PASSWORD_BCRYPT, array('cost' => 12)). "'";
+        }
 
-    checkCsrf();
+        $query .= implode(', ', $fields);
+        $query .= " WHERE id = ? ";
 
-    $user_firstname = escape($_POST['user_firstname']);
-    $user_lastname = escape($_POST['user_lastname']);
-    $email = escape($_POST['user_email']);
-    $user_email = filter_var($email, FILTER_SANITIZE_EMAIL);
-    $password = escape($_POST['user_password']);
-    $user_password = password_hash($password, PASSWORD_BCRYPT, array('cost' => 12));
-    $user_role = escape($_POST['user_role']);
+        // Prepare the SQL query for execution and bind the parameter
+        $stmt = mysqli_prepare($connection, $query);
+        mysqli_stmt_bind_param($stmt, 'i', $the_user_id);
 
+        // Execute the prepared statement to update the user's information
+        mysqli_stmt_execute($stmt);
 
-    $query = "UPDATE users SET ";
-    $query .= "user_firstname = ?, ";
-    $query .= "user_lastname = ?, ";
-    $query .= "user_role = ?, ";
-    $query .= "user_email = ?, ";
-    $query .= "user_password = ? ";
-    $query .= "WHERE id = ? ";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, 'sssssi', $user_firstname, $user_lastname, $user_role, $user_email, $user_password, $the_user_id);
-    mysqli_stmt_execute($stmt);
+        session_regenerate_id();
 
-    session_regenerate_id();
-
-    // Redirect to a secure page after successful login
-    redirect("users.php");
-
+        // Redirect to a secure page after successful update
+        redirect("users.php");
+    }
     exit();
 }
 
-
-
 ?>
-<form action="" method="post">
+<form method="post">
     <div class="form-group">
         <label for="title">Firstname</label>
         <input type="text" value="<?php echo1($user_firstname) ?>" class="form-control" name="user_firstname">
