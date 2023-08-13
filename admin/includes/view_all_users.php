@@ -48,7 +48,7 @@
             echo "<td> <a class='btn btn-warning' href='{$updateUser}'>Edit</a></td>";
         ?>
             <form method="post">
-                <input type="hidden" name="user_id" value="<?php echo $user_id ?>">
+                <input type="hidden" name="user_id" value="<?= $user_id ?>">
                 <?php
                 echo '<td><input class="btn btn-danger" type="submit" name="delete" value="Delete"></td>';
                 ?>

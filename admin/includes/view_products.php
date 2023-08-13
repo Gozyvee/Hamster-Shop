@@ -77,7 +77,7 @@ if (isset($_POST['checkBoxArray'])) {
             while (mysqli_stmt_fetch($stmt)) {
                 echo "<tr>";
             ?>
-                <td><input class='checkBoxes' type='checkbox' name='checkBoxArray[]' value='<?php echo htmlspecialchars($product_id); ?>'></td>
+                <td><input class='checkBoxes' type='checkbox' name='checkBoxArray[]' value='<?= htmlspecialchars($product_id); ?>'></td>
                 <?php
                 echo "<td>" . escape($product_id) . "</td>";
                 echo "<td>" . escape($product_user) . "</td>";
@@ -101,7 +101,7 @@ if (isset($_POST['checkBoxArray'])) {
                 ?>
 
                 <form method="post">
-                    <input type="hidden" name="user_id" value="<?php echo $product_id ?>">
+                    <input type="hidden" name="user_id" value="<?= $product_id ?>">
                     <?php
                     echo '<td><input class="btn btn-danger" type="submit" name="delete" value="Delete"></td>';
                     ?>
@@ -122,7 +122,7 @@ change_to_sub();
 //deleting user from database with post method
 postDelete('products','products.php');
 ?>
-<!-- <script>
+<script>
     $(document).ready(function() {
         $('#selectAllBoxes').click(function(event) {
             if (this.checked) {
@@ -136,4 +136,4 @@ postDelete('products','products.php');
             }
         });
     });
-</script> -->
+</script>

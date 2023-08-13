@@ -68,7 +68,35 @@ function change_to_sub()
     }
 }
 
+function cartElement($productimg,$productname,$productprice,$productid){
+    $element = "
+    
+    <form action=\"cart.php?action=remove&id=$productid\" method=\"post\" method=\"get\" class=\"cart-items\">
+    <div class=\"border rounded\">
+         <div class=\"row bg-white border mb-4 \">
+             <div class=\"col-md-3 p-0\">
+                 <img src=img/$productimg alt=\"Image1\" class=\"img-fluid w-100\">
+             </div>
+             <div class=\"col-md-6 pb-3\">
+                 <h5 class=\"pt-2\">$productname</h5>
+                 <h5 class=\"pt-2\"><i class=\"fa fa-naira-sign\"></i>$productprice</h5>
+                 <button type=\"submit\" class=\"btn text-light fw-bold\" style=\" background-color:#95C41F\" >Save For Later</button>
+                 <button type=\"submit\" class=\"btn btn-danger mx-2\" name=\"remove\" ><i class=\"fa-solid fa-trash-can\"></i>Remove</button>
+             </div>
+             <div class=\"col-md-3 py-5\">
+                 <div>
+                 <button class=\"btn btn-light border\" style=\"border-radius: 50%;\">+</button>
+                 <span>1</span>
+                 <button class=\"btn btn-light border\" style=\"border-radius: 50%;\">-</button>
+                 </div>
+             </div>
+         </div>
+    </div>
+</form>
+    ";
 
+    echo $element;
+ }
 
 //=====END USER SPECIFIC HELPERS=====//
 
@@ -91,15 +119,6 @@ function redirect($location=null){
 //         return false;
 //     }
 // }
-
-function countCart (){
-    // global $connection;
-    if($_GET['cartCount']){
-       
-        echo count($_SESSION['cart']);
-    }
-    
-}
 
 function imgSanitizer($product_image){
       // Validate the product image value

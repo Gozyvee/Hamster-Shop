@@ -4,23 +4,21 @@ require "includes/navbar.php";
 
 <body>
     <?php
-        function cart(){
-            if (isset($_POST['add'])) {
-                $product_id = $_POST['product_id'];
-            
-                if (!isset($_SESSION['cart'])) {
-                    $_SESSION['cart'] = array();
-                }
-            
-                if (isset($_SESSION['cart'][$product_id])) {
-                    echo "already in cart";
-                } else {
-                    $_SESSION['cart'][$product_id] = 1;
-                }
+          if (isset($_POST['add'])) {
+            $product_id = $_POST['product_id'];
+        
+            if (!isset($_SESSION['cart'])) {
+                $_SESSION['cart'] = array();
             }
-            return $_SESSION['cart'];
+        
+            if (!isset($_SESSION['cart'][$product_id])) {
+                $_SESSION['cart'][$product_id] = 1; // Here, '1' represents the initial quantity
+            }
+            
+            header('Location: cart_page.php'); // Redirect to the cart page
+            exit();
         }
-        cart();
+        
     ?>
     <!-- Modal -->
     <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -124,7 +122,7 @@ require "includes/navbar.php";
                                         <img src="./img/<?= $product_image ?>" alt="">
                                         <div class="card-body">
                                             
-                                            <a href="shop-single.php?display_single=" .<?=$product_gender?> class="h3 text-decoration-none card-title"><?= $product_name ?></a>
+                                            <a href="shop-single.php?display_single=<?=$product_id?>" class="h3 text-decoration-none card-title"><?= $product_name ?></a>
                                             <p class="card-text">jibberish</p>
                                             <ul class="list-unstyled d-flex justify-content-between">
                                                 <li>
@@ -135,7 +133,7 @@ require "includes/navbar.php";
                                                     <i class="text-muted fa fa-star"></i>
                                                 </li>
                                                 <li class="text-right">
-                                                    <p>$ <?= $product_price ?></p>
+                                                    <p>$<?= $product_price ?></p>
                                                 </li>
                                             </ul>
                                             <form method="post">
